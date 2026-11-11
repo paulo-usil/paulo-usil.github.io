@@ -220,23 +220,48 @@ NO escribas NINGÚN archivo hasta haber recibido mis respuestas.
 ```
 
 ### B) Iniciar nueva feature (Fase 2 - Pasos 1-4)
-
 ```text
+Quiero iniciar una nueva feature siguiendo estrictamente el flujo SDD del proyecto.
+Antes de hacer cualquier cambio, lee completamente:
+- specs/mission.md
+- specs/tech-stack.md
+- specs/roadmap.md
+- README.md
+
 Busca el PRIMER ítem sin marcar [ ] en specs/roadmap.md. Trabaja ÚNICAMENTE sobre esa fase.
 
-Crea una nueva rama git con un nombre kebab-case coherente con esa feature.
+No modifiques todavía ningún archivo del código ni marques la fase como completada.
 
-Crea el directorio specs/YYYY-MM-DD-[nombre-kebab-case]/ con estos 3 archivos:
-- requirements.md
-- plan.md
-- validation.md
+Crea una nueva rama git usando el formato: feature/nombre-kebab-case
 
-ANTES de crear cualquier archivo, entrevístame con estas 3 preguntas agrupadas usando AskUserQuestion:
-1. SCOPE (Alcance): ¿Qué debe hacer esta feature? ¿Qué campos/comportamientos incluye? ¿Qué NO debe hacer?
-2. DECISIONS (Decisiones): ¿Hay decisiones técnicas o de UX que deba tomar ya? (almacenamiento, validación, visibilidad, etc.)
-3. CONTEXT (Contexto): ¿Tono/copy, integraciones, limitaciones o cualquier detalle a tener en cuenta?
+Antes de crear cualquier archivo, entrevístame usando exactamente estas 3 preguntas agrupadas mediante AskUserQuestion:
+1. SCOPE (Alcance): ¿Qué debe hacer esta feature? ¿Qué campos, páginas y comportamientos incluye? ¿Qué queda explícitamente fuera de alcance?
+2. DECISIONS (Decisiones): ¿Qué decisiones técnicas o de UX debo tomar ahora? Considera almacenamiento, validación, accesibilidad, visibilidad, responsive, dependencias y necesidad de JavaScript.
+3. CONTEXT (Contexto): ¿Qué tono, copy, integraciones, limitaciones, convenciones o detalles adicionales debo tener en cuenta?
+
+No escribas ningún archivo hasta recibir mis respuestas.
+
+Después de recibir mis respuestas, crea únicamente este directorio y sus tres archivos:
+
+specs/YYYY-MM-DD-nombre-kebab-case/
+├── requirements.md
+├── plan.md
+└── validation.md
+
+Requisitos:
+- requirements.md debe describir el objetivo, el alcance, el fuera de alcance y criterios de aceptación verificables.
+- plan.md debe describir la solución técnica, los archivos a crear o modificar y grupos de tareas ordenados.
+- validation.md debe describir las validaciones automatizadas y manuales necesarias para confirmar que la feature está terminada.
 
 Guíate SIEMPRE por specs/mission.md y specs/tech-stack.md para mantener total coherencia con la constitución.
+
+No implementes código todavía.
+No modifiques mission.md ni tech-stack.md.
+No modifiques otras features o specs existentes.
+No marques el ítem del roadmap como [x].
+No hagas commit ni merge.
+
+Al finalizar, muestra el contenido de los tres archivos creados y espera mi revisión y aprobación explícita del plan.
 ```
 
 ### C) Revisar el plan como revisor senior (Antes de aprobar)
