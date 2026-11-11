@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title or "Paulo Ugarte - Blog" }}</title>
+  <meta name="description" content="{{ description }}">
+  <link rel="canonical" href="{{ page.url | url }}">
+  <meta property="og:title" content="{{ title or "Paulo Ugarte - Blog" }}">
+  <meta property="og:description" content="{{ description }}">
+  <meta property="og:type" content="{{ ogType or 'website' }}">
+  <meta property="og:url" content="{{ page.url | url }}">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="site-title" href="/">Paulo Ugarte</a>
+    </div>
+  </header>
+  <main class="site-main">
+    <div class="container">
+      {{ content | safe }}
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="container">
+      <p>© {{ '' | year }} Paulo Ugarte</p>
+    </div>
+  </footer>
+</body>
+</html>

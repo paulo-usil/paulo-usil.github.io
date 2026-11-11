@@ -1,0 +1,6 @@
+{
+  "layout": "base.njk",
+  "ogType": "article",
+  "tags": ["posts"],
+  "permalink": "/{{ page.fileSlug }}/"
+}
