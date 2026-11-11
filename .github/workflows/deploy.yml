@@ -1,55 +1,92 @@
-name: Deploy to GitHub Pages # Nombre visible en la pestaña Actions de GitHub
+name: CI/CD - Quality & Deploy
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
-permissions:
-  contents: read   # Permite leer los archivos del repositorio
-  pages: write     # Permite desplegar el sitio en GitHub Pages
-  id-token: write  # Token de seguridad OIDC para autenticar el despliegue
+# Sin permisos globales por seguridad (Principio de mínimo privilegio)
+permissions: {}
 
-# Control de ejecuciones simultáneas
 concurrency:
   group: "pages"
-  cancel-in-progress: true # Cancela despliegues viejos si subes un cambio nuevo rápido
+  cancel-in-progress: true
 
 jobs:
-  # Build y deploy en un solo job para ahorrar tiempo de arranque de máquina
-  build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }} # Muestra el enlace web al finalizar
-    runs-on: ubuntu-latest # Sistema operativo temporal donde corren los comandos
-
+  quality:
+    name: Linter & SonarQube Cloud
+    runs-on: ubuntu-latest
+    # Este job solo necesita leer el repositorio
+    permissions:
+      contents: read
     steps:
-      # 1. Descarga el código de tu repositorio en la máquina virtual
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
 
-      # 2. Configura Node.js y activa la caché de paquetes para acelerar futuras ejecuciones
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      # 3. Instala dependencias exactas desde package-lock.json
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
-      # 4. Verifica JavaScript, compila el sitio y valida el HTML generado
-      - name: Lint
+      - name: Run Linters & Build
         run: npm run lint
 
-      # 5. Empaqueta la carpeta _site como un artefacto listo para publicar
+      - name: Cache SonarQube packages
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@4d1dc0c91ee400dcf8a6dddf2f705ac36542e304 # v8.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: quality
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    # Permisos de despliegue asignados exclusivamente al job que publica
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build
+        run: npm run build
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./_site
 
-      # 6. Publica el artefacto en los servidores de GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
